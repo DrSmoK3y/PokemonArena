@@ -407,6 +407,7 @@ h1, h2, h3, h4 {
 .move-btn .move-name {
     font-size: 0.9rem;
     font-weight: 600;
+    color: white;
     text-transform: capitalize;
 }
 
