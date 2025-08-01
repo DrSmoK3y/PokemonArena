@@ -678,7 +678,7 @@ h1, h2, h3, h4 {
     #pokemon-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
     .pokemon-card img { width: 96px; height: 96px; }
     .category-grid { grid-template-columns: 1fr; }
-    #battle-log-container { height: 100px; }
+    #battle-log-container { height: 200px; }
     .moves-grid { grid-template-columns: 1fr; }
     .pokemon-grid-container {
 
