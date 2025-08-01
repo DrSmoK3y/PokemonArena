@@ -657,7 +657,7 @@ function handlePlayerAction(action: { type: 'attack', move: Move } | { type: 'sw
         setState({ isPlayerTurn: false, lastPlayerMove: action.move.name });
         processTurn(state.playerTeam[state.playerActivePokemonIndex], state.opponentTeam[state.opponentActivePokemonIndex], action.move);
     } else if (action.type === 'switch') {
-        setState({ isPlayerTurn: false });
+        // Switching is a free action, so we don't change the turn state here.
         openModal(<SwitchPokemonModal />);
     }
 }
@@ -687,12 +687,14 @@ function processTurn(attacker: BattlePokemon, defender: BattlePokemon, move: Mov
                 setTimeout(aiTurn, 1000);
             } else {
                 setState({ isPlayerTurn: true });
+                addLog(`What will <strong>${state.playerTeam[state.playerActivePokemonIndex].name}</strong> do?`);
             }
         }, 500);
     }, 500);
 }
 
 function aiTurn() {
+    if (state.isBattleOver) return;
     const ai = state.opponentTeam[state.opponentActivePokemonIndex];
     const player = state.playerTeam[state.playerActivePokemonIndex];
     
@@ -707,6 +709,7 @@ function aiTurn() {
         setState({ opponentActivePokemonIndex: newIndex, lastOpponentMove: null });
         addLog(`Go, <strong>${state.opponentTeam[newIndex].name}</strong>!`);
         setState({ isPlayerTurn: true });
+        addLog(`What will <strong>${player.name}</strong> do?`);
         return;
     }
 
@@ -737,25 +740,40 @@ async function checkFaint(pokemon: BattlePokemon): Promise<boolean> {
     }
     
     if (isPlayerPokemon) {
+        addLog(`You need to switch to another Pokémon.`);
         openModal(<SwitchPokemonModal />);
     } else {
         const nextOpponentIndex = state.opponentTeam.findIndex(p => !p.isFainted);
         setState({ opponentActivePokemonIndex: nextOpponentIndex, lastOpponentMove: null });
         addLog(`Opponent sent out <strong>${state.opponentTeam[nextOpponentIndex].name}</strong>!`);
         setState({ isPlayerTurn: true });
+        addLog(`What will <strong>${state.playerTeam[state.playerActivePokemonIndex].name}</strong> do?`);
     }
 
     return true;
 }
 
 function handleSwitch(newIndex: number) {
+    const wasPlayerPokemonFainted = state.playerTeam[state.playerActivePokemonIndex].isFainted;
+    
     closeModal();
     const oldPokemonName = state.playerTeam[state.playerActivePokemonIndex].name;
-    setState({ playerActivePokemonIndex: newIndex, lastPlayerMove: null });
+    
+    setState({ 
+        playerActivePokemonIndex: newIndex, 
+        lastPlayerMove: null 
+    });
+
     const newPokemonName = state.playerTeam[newIndex].name;
     addLog(`<strong>${oldPokemonName}</strong>, come back! Go, <strong>${newPokemonName}</strong>!`);
 
-    setTimeout(aiTurn, 1000);
+    // If the switch was forced because a Pokémon fainted, the opponent's turn is over.
+    // It's now the player's turn with the new Pokémon.
+    if (wasPlayerPokemonFainted) {
+        setState({ isPlayerTurn: true });
+        addLog(`What will <strong>${newPokemonName}</strong> do?`);
+    }
+    // For a voluntary switch, the turn was already the player's and it remains so.
 }
 
 function nextLeagueRound() {
@@ -809,14 +827,10 @@ function closeModal() {
     if (modalContainer) {
         modalContainer.innerHTML = '';
     }
-    // If we closed the switch modal without choosing (e.g. cancel), and it's our turn to switch, force choice
+    // If we closed the switch modal without choosing (e.g. cancel), and it's a forced switch, we must reopen it.
     const player = state.playerTeam[state.playerActivePokemonIndex];
     if (player?.isFainted && !state.isBattleOver) {
         openModal(<SwitchPokemonModal />);
-    } else if (!state.isPlayerTurn && !state.isBattleOver) {
-        // If the modal was cancelled, it's still the opponent's turn.
-        // Give control back to the player if they didn't switch.
-        setState({ isPlayerTurn: true });
     }
 }
 
