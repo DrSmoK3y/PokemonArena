@@ -269,7 +269,7 @@ h1, h2, h3, h4 {
 .team-slot img { width: 40px; height: 40px; object-fit: contain; }
 .team-slot span { text-transform: capitalize; flex-grow: 1; }
 
-#selection-footer { display: flex; justify-content: space-between; gap: 1rem; padding-top: 1rem; }
+#selection-footer { display: flex; justify-content: space-between; gap: 1rem; padding-top: 1rem; flex-wrap: wrap; }
 
 /* BATTLE SCREEN */
 #battle-screen { display: flex; flex-direction: column; height: 100%; gap: 1rem; }
@@ -665,7 +665,14 @@ h1, h2, h3, h4 {
 }
 
 @media (max-width: 600px) {
-    #start-screen h1 { font-size: 3.5rem; }
+        #start-screen h1 {
+        font-size: 45px;
+        text-align: center;
+    }
+    #start-screen h2 {
+    font-size: 22px;
+    margin-bottom: 1rem;
+}
     .selection-header h2, .battle-header h2 { font-size: 2rem; }
     .btn { font-size: 1.2rem; }
     #pokemon-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
@@ -673,6 +680,14 @@ h1, h2, h3, h4 {
     .category-grid { grid-template-columns: 1fr; }
     #battle-log-container { height: 100px; }
     .moves-grid { grid-template-columns: 1fr; }
+    .pokemon-grid-container {
+
+    padding-right: 0px;
+}
+        .selection-header h2, .battle-header h2 {
+        font-size: 20px;
+        text-align: center;
+    }
 }
 
 /* Scrollbar styling */
