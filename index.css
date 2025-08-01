@@ -1,0 +1,681 @@
+
+:root {
+    --font-heading: 'Bangers', cursive;
+    --font-body: 'Inter', sans-serif;
+    --color-primary: #ffcb05;
+    --color-secondary: #3d7dca;
+    --color-accent: #003a70;
+    --color-light: #f0f0f0;
+    --color-dark: #222;
+    --color-red: #e74c3c;
+    --color-green: #2ecc71;
+    --color-yellow: #f1c40f;
+
+    --type-normal: #A8A77A;
+    --type-fire: #EE8130;
+    --type-water: #6390F0;
+    --type-electric: #F7D02C;
+    --type-grass: #7AC74C;
+    --type-ice: #96D9D6;
+    --type-fighting: #C22E28;
+    --type-poison: #A33EA1;
+    --type-ground: #E2BF65;
+    --type-flying: #A98FF3;
+    --type-psychic: #F95587;
+    --type-bug: #A6B91A;
+    --type-rock: #B6A136;
+    --type-ghost: #735797;
+    --type-dragon: #6F35FC;
+    --type-dark: #705746;
+    --type-steel: #B7B7CE;
+    --type-fairy: #D685AD;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    font-family: var(--font-body);
+    color: var(--color-light);
+    background: linear-gradient(135deg, #1d2b64, #1a2541, #0e131f);
+    background-attachment: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#app {
+    width: 100%;
+    height: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+h1, h2, h3, h4 {
+    font-family: var(--font-heading);
+    letter-spacing: 2px;
+    color: var(--color-primary);
+    text-shadow: 2px 2px 4px var(--color-accent);
+}
+
+/* Glassmorphism Container */
+.glass-container {
+    background: rgba(14, 19, 31, 0.6);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 2rem;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* Utility Classes */
+.hidden { display: none !important; }
+.text-center { text-align: center; }
+.d-flex { display: flex; }
+.flex-column { flex-direction: column; }
+.justify-center { justify-content: center; }
+.align-center { align-items: center; }
+.gap-1 { gap: 1rem; }
+.gap-2 { gap: 2rem; }
+.w-100 { width: 100%; }
+.h-100 { height: 100%; }
+.mt-2 { margin-top: 2rem; }
+
+/* Buttons */
+.btn {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 10px;
+    background-color: var(--color-primary);
+    color: var(--color-accent);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+.btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+.btn:disabled {
+    background-color: #777;
+    color: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-secondary {
+    background-color: var(--color-secondary);
+    color: var(--color-light);
+}
+
+/* START SCREEN */
+#start-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+#start-screen h1 { font-size: 6rem; margin-bottom: 2rem; }
+#start-screen h2 { font-size: 3rem; margin-bottom: 1rem; }
+
+.mode-selection, .category-selection {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    width: 100%;
+}
+
+/* POKEMON SELECTION SCREEN */
+#pokemon-selection-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    height: 100%;
+}
+
+.selection-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.selection-header h2 { font-size: 3rem; }
+
+.search-bar {
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-light);
+    font-size: 1rem;
+    width: 100%;
+    max-width: 300px;
+}
+
+.selection-main {
+    display: flex;
+    gap: 1.5rem;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.pokemon-grid-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow-y: auto;
+    padding-right: 10px; /* for scrollbar */
+}
+
+#pokemon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.pokemon-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.pokemon-card:hover {
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.pokemon-card.selected {
+    border-color: var(--color-primary);
+    background: rgba(255, 203, 5, 0.2);
+}
+
+.pokemon-card img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+}
+
+.pokemon-card-name {
+    margin-top: 0.5rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    font-size: 0.9rem;
+}
+
+.team-preview-panel {
+    width: 250px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.team-preview-panel h3 { font-size: 2rem; text-align: center; }
+
+#team-slots { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.team-slot {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 0.5rem;
+    height: 60px;
+}
+
+.team-slot.empty { justify-content: center; color: rgba(255,255,255,0.4); }
+.team-slot img { width: 40px; height: 40px; object-fit: contain; }
+.team-slot span { text-transform: capitalize; flex-grow: 1; }
+
+#selection-footer { display: flex; justify-content: space-between; gap: 1rem; padding-top: 1rem; }
+
+/* BATTLE SCREEN */
+#battle-screen { display: flex; flex-direction: column; height: 100%; gap: 1rem; }
+
+.battle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.battle-header h2 { font-size: 3rem; }
+
+.end-battle-btn { font-size: 1rem; padding: 0.5rem 1.5rem; }
+
+#battle-arena {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    flex-grow: 1;
+    position: relative;
+}
+
+.pokemon-fighter-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.pokemon-fighter-info {
+    padding: 1rem;
+    border-radius: 12px;
+}
+
+.info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    text-transform: capitalize;
+    margin-bottom: 0.5rem;
+}
+
+.hp-bar-container {
+    width: 100%;
+    height: 15px;
+    background-color: rgba(0,0,0,0.4);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.hp-bar {
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.5s ease-in-out, background-color 0.5s ease-in-out;
+}
+
+.hp-text { font-size: 0.9rem; font-weight: bold; margin-top: 0.25rem; }
+.opponent .hp-text { text-align: right; }
+
+.pokemon-img-container {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+.pokemon-img-container img {
+    max-width: 300px;
+    width: 80%;
+    transition: transform 0.3s ease;
+    object-fit: contain;
+}
+
+.hit-animation { animation: hit 0.3s ease-in-out; }
+@keyframes hit { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+.attack-animation { animation: attack 0.4s ease-out; }
+@keyframes attack {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.fainted { filter: grayscale(1); opacity: 0.5; }
+.faint-animation { animation: faint 0.5s ease-out forwards; }
+@keyframes faint {
+    from { transform: translateY(0); opacity: 0.5; }
+    to { transform: translateY(50px); opacity: 0; }
+}
+
+.moves-display { min-height: 200px; display: flex; }
+
+.action-buttons-placeholder {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    color: rgba(255,255,255,0.5);
+}
+
+.action-buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.moves-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    flex-grow: 1;
+}
+
+.move-btn {
+    font-family: var(--font-body);
+    padding: 0.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    text-align: center;
+}
+
+.move-btn .move-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.move-btn .move-power {
+    font-size: 0.75rem;
+    font-weight: normal;
+    color: rgba(255,255,255,0.8);
+}
+
+.move-btn:hover:not(:disabled) { transform: scale(1.05); }
+
+.move-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--color-dark);
+    border-color: #777 !important;
+    color: #aaa;
+}
+.move-btn:disabled .type-badge { opacity: 0.7; }
+
+.opponent-moves-container {
+    width: 100%;
+    background: rgba(0,0,0,0.2);
+    border-radius: 12px;
+    padding: 1rem;
+}
+.opponent-moves-container h3 {
+    font-size: 1.5rem; text-align: center; margin-bottom: 0.75rem;
+}
+
+.move-btn-sm {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem;
+    background: rgba(0,0,0,0.3);
+    border-radius: 5px;
+    font-size: 0.8rem;
+}
+.move-btn-sm .move-name { text-transform: capitalize; }
+.move-btn-sm.disabled { opacity: 0.4; }
+
+
+#switch-btn-container { text-align: center; }
+#switch-btn-container .btn { width: 100%; font-size: 1.2rem; }
+
+.type-badge {
+    display: inline-block;
+    padding: 0.2em 0.5em;
+    border-radius: 5px;
+    color: white;
+    font-size: 0.8rem;
+    text-shadow: 1px 1px 2px black;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+#battle-log-container {
+    height: 120px;
+    overflow-y: auto;
+    background: rgba(0,0,0,0.3);
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+#battle-log p {
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+#battle-log p:last-child { border-bottom: none; margin-bottom: 0; }
+
+/* MODAL */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal-content { max-width: 90%; width: 600px; }
+
+#switch-pokemon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.pokemon-card.fainted {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(1);
+}
+
+.modal-content h2 { font-size: 3rem; text-align: center; margin-bottom: 2rem; }
+.modal-content .btn { margin-top: 2rem; }
+
+/* LEAGUE TRANSITION OVERLAY */
+.league-transition-overlay .modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+.league-transition-overlay h2 { font-size: 4rem; }
+.vs-pokeball {
+    width: 80px; height: 80px;
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgZmlsbD0iI2ZmZiI+PHBhdGggZD0iTTEyIDJBMTAgMTAgMCAwIDAgMiAxMmExMCAxMCAwIDAgMCAxMCAxMCAxMCAxMCAwIDAgMCAxMC0xMEExMCAxMCAwIDAgMCAxMiAyem0wIDJhOCA4IDAgMCAxIDggOCA4IDggMCAwIDEgLTggOCA4IDggMCAwIDEgLTgtOCA4IDggMCAwIDEgOC04em0wIDZoMnYySDJ2LTJIMTB6bS00IDJoOHYtMkg4djJ6bTQgMmE0IDQgMCAwIDEgNCA0IDQgNCAwIDAgMS00IDQgNCA0IDAgMCAxLTQtNCA0IDQgMCAwIDEgNC00em0wIDJhMiAyIDAgMCAwLTIgMiAyIDIgMCAwIDAgMiAyIDIgMiAwIDAgMCAyLTIgMiAyIDAgMCAwLTItMnoiLz48L3N2Zz4=');
+    background-size: contain; background-repeat: no-repeat; background-position: center;
+}
+
+/* TYPE CHART PANEL */
+#type-chart-panel {
+    position: fixed;
+    top: 0; right: -100%;
+    width: 100%; max-width: 450px; height: 100%;
+    background: #1f2937;
+    border-left: 1px solid rgba(255,255,255,0.2);
+    backdrop-filter: blur(15px);
+    z-index: 1001;
+    transition: right 0.4s ease-in-out;
+    display: flex; flex-direction: column; padding: 1rem;
+}
+#type-chart-panel.open { right: 0; }
+
+.type-chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+}
+
+.type-chart-header h2 {
+    font-size: 2rem;
+    margin: 0;
+}
+
+.close-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+#type-chart-content {
+    overflow-y: auto;
+    flex-grow: 1;
+    padding-right: 10px;
+}
+
+.type-effectiveness-card {
+    background: #2d3748;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.type-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+    text-transform: capitalize;
+}
+
+.type-card-header .type-badge {
+    font-size: 1rem;
+}
+
+.type-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.effectiveness-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.effectiveness-row strong {
+    color: #ccc;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    min-width: 80px; /* Align badges */
+}
+
+.badges-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+#type-chart-toggle {
+    position: fixed; top: 20px; right: 20px; z-index: 50;
+    background: var(--color-secondary); color: white; border: none;
+    border-radius: 50%; width: 50px; height: 50px;
+    font-size: 1.5rem; cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+/* LOADING SPINNER */
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255,255,255,0.3);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 1rem auto;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* RESPONSIVENESS */
+@media (max-width: 900px) {
+    #battle-arena { grid-template-columns: 1fr; gap: 1rem; }
+    .pokemon-img-container { min-height: 150px; }
+    .pokemon-img-container img { max-width: 200px; }
+    .selection-main { flex-direction: column; }
+    .team-preview-panel { width: 100%; max-height: 200px; }
+    #team-slots { flex-direction: row; overflow-x: auto; }
+    .team-slot { min-width: 150px; }
+}
+
+@media (max-width: 600px) {
+    #start-screen h1 { font-size: 3.5rem; }
+    .selection-header h2, .battle-header h2 { font-size: 2rem; }
+    .btn { font-size: 1.2rem; }
+    #pokemon-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+    .pokemon-card img { width: 96px; height: 96px; }
+    .category-grid { grid-template-columns: 1fr; }
+    #battle-log-container { height: 100px; }
+    .moves-grid { grid-template-columns: 1fr; }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
+::-webkit-scrollbar-thumb { background: var(--color-secondary); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #4a8ad4; }
