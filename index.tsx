@@ -469,15 +469,27 @@ const GameOverScreen = () => (
     <div className="modal-overlay">
         <div className="modal-content glass-container text-center">
             <h1>{state.battleResult === 'win' ? 'You Win!' : 'You Lose!'}</h1>
-            {state.mode === 'league' && state.battleResult === 'win' && state.leagueRound < (LEAGUE_ROUNDS-1) && (
-                <p>You defeated trainer {state.leagueRound + 1}! Get ready for the next battle.</p>
+            
+            {state.mode === 'league' && state.battleResult === 'win' ? (
+                <>
+                    {state.leagueRound < (LEAGUE_ROUNDS - 1) ? (
+                        <>
+                            <p>You defeated trainer {state.leagueRound + 1}! Get ready for the next battle.</p>
+                            <div className="d-flex justify-center gap-1 mt-2">
+                                <button className="btn" onClick={nextLeagueRound}>Next Opponent</button>
+                                <button className="btn btn-secondary" onClick={updateMovesAndContinue}>Update Moves & Continue</button>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <p>Congratulations! You have conquered the League Challenge!</p>
+                            <button className="btn mt-2" onClick={goBackToStart}>Play Again</button>
+                        </>
+                    )}
+                </>
+            ) : (
+                <button className="btn mt-2" onClick={goBackToStart}>Play Again</button>
             )}
-            {state.mode === 'league' && state.battleResult === 'win' && state.leagueRound === (LEAGUE_ROUNDS-1) && (
-                <p>Congratulations! You have conquered the League Challenge!</p>
-            )}
-            <button className="btn" onClick={state.mode === 'league' && state.battleResult === 'win' && state.leagueRound < (LEAGUE_ROUNDS-1) ? nextLeagueRound : goBackToStart}>
-                {state.mode === 'league' && state.battleResult === 'win' && state.leagueRound < (LEAGUE_ROUNDS-1) ? 'Next Opponent' : 'Play Again'}
-            </button>
         </div>
     </div>
 );
@@ -503,14 +515,14 @@ const SwitchPokemonModal = () => (
 );
 
 const LeagueTransitionOverlay = () => {
-    const nextOpponent = state.leagueOpponents[state.leagueRound + 1];
+    const nextOpponent = state.leagueOpponents[state.leagueRound];
     if (!nextOpponent) return null;
     const nextOpponentImageUrl = getPokemonImageUrl(nextOpponent);
 
     return (
         <div className="modal-overlay league-transition-overlay">
             <div className="modal-content glass-container text-center">
-                <h2>Round {state.leagueRound + 2}</h2>
+                <h2>Round {state.leagueRound + 1}</h2>
                 <div className="d-flex justify-center align-center gap-2">
                     <img src={state.playerTeam[0].sprite} style={{width: '150px'}}/>
                     <div className="vs-pokeball"></div>
@@ -657,7 +669,7 @@ function handlePlayerAction(action: { type: 'attack', move: Move } | { type: 'sw
         setState({ isPlayerTurn: false, lastPlayerMove: action.move.name });
         processTurn(state.playerTeam[state.playerActivePokemonIndex], state.opponentTeam[state.opponentActivePokemonIndex], action.move);
     } else if (action.type === 'switch') {
-        // Switching is a free action, so we don't change the turn state here.
+        // Switching is a free action for the player.
         openModal(<SwitchPokemonModal />);
     }
 }
@@ -695,8 +707,17 @@ function processTurn(attacker: BattlePokemon, defender: BattlePokemon, move: Mov
 
 function aiTurn() {
     if (state.isBattleOver) return;
-    const ai = state.opponentTeam[state.opponentActivePokemonIndex];
+    let ai = state.opponentTeam[state.opponentActivePokemonIndex];
     const player = state.playerTeam[state.playerActivePokemonIndex];
+
+    const performAttack = (attacker: BattlePokemon) => {
+        const availableMoves = attacker.moves.filter(m => m.name !== state.lastOpponentMove);
+        const movesToChooseFrom = availableMoves.length > 0 ? availableMoves : attacker.moves;
+        const randomMove = movesToChooseFrom[Math.floor(Math.random() * movesToChooseFrom.length)];
+
+        setState({ lastOpponentMove: randomMove.name });
+        processTurn(attacker, player, randomMove);
+    };
     
     const canSwitch = state.opponentTeam.filter(p => !p.isFainted).length > 1;
     if (ai.currentHp / ai.maxHp < 0.2 && canSwitch) {
@@ -707,18 +728,16 @@ function aiTurn() {
         
         addLog(`<strong>${ai.name}</strong> was switched out!`);
         setState({ opponentActivePokemonIndex: newIndex, lastOpponentMove: null });
-        addLog(`Go, <strong>${state.opponentTeam[newIndex].name}</strong>!`);
-        setState({ isPlayerTurn: true });
-        addLog(`What will <strong>${player.name}</strong> do?`);
+        
+        const newAiPokemon = state.opponentTeam[newIndex];
+        addLog(`Go, <strong>${newAiPokemon.name}</strong>!`);
+        
+        // After switching, the AI still gets to attack in the same turn.
+        setTimeout(() => performAttack(newAiPokemon), 1000);
         return;
     }
 
-    const availableMoves = ai.moves.filter(m => m.name !== state.lastOpponentMove);
-    const movesToChooseFrom = availableMoves.length > 0 ? availableMoves : ai.moves;
-    const randomMove = movesToChooseFrom[Math.floor(Math.random() * movesToChooseFrom.length)];
-
-    setState({ lastOpponentMove: randomMove.name });
-    processTurn(ai, player, randomMove);
+    performAttack(ai);
 }
 
 async function checkFaint(pokemon: BattlePokemon): Promise<boolean> {
@@ -767,19 +786,45 @@ function handleSwitch(newIndex: number) {
     const newPokemonName = state.playerTeam[newIndex].name;
     addLog(`<strong>${oldPokemonName}</strong>, come back! Go, <strong>${newPokemonName}</strong>!`);
 
-    // If the switch was forced because a Pokémon fainted, the opponent's turn is over.
-    // It's now the player's turn with the new Pokémon.
+    // If the switch was forced because a Pokémon fainted, it becomes the player's turn.
     if (wasPlayerPokemonFainted) {
         setState({ isPlayerTurn: true });
         addLog(`What will <strong>${newPokemonName}</strong> do?`);
     }
     // For a voluntary switch, the turn was already the player's and it remains so.
+    // The player can now choose an action.
 }
 
 function nextLeagueRound() {
     closeModal();
     setState({ leagueRound: state.leagueRound + 1 });
     openModal(<LeagueTransitionOverlay />);
+}
+
+async function updateMovesAndContinue() {
+    openModal(
+        <div className="modal-overlay">
+            <div className="modal-content glass-container text-center">
+                <h2>Updating moves...</h2>
+                <div className="loading-spinner"></div>
+            </div>
+        </div>
+    );
+    
+    const playerPokemonInfo = state.selectedTeam[0];
+    
+    const movePromises = playerPokemonInfo.moves
+        .sort(() => 0.5 - Math.random())
+        .map(m => fetchFromApi<Move>(m.move.url));
+    
+    const resolvedMoves = await Promise.all(movePromises);
+    const newMoves = resolvedMoves.filter(m => m && m.power).slice(0, MOVES_PER_POKEMON);
+    
+    state.playerTeam[0].moves = newMoves;
+    
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    nextLeagueRound();
 }
 
 async function startNextLeagueBattle() {
