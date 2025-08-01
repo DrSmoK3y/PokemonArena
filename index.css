@@ -258,8 +258,8 @@ div#start-screen {
 
 .team-preview-panel h3 { font-size: 2rem; text-align: center; }
 
-#team-slots { display: flex; flex-direction: column; gap: 0.75rem; flex-wrap: wrap;
-    justify-content: center; }
+#team-slots { display: flex; flex-direction: column; gap: 0.75rem;
+     }
 
 .team-slot {
     display: flex;
@@ -705,7 +705,7 @@ div#start-screen {
 
 @media (max-width: 900px) {
     .team-slot {
-        min-width: 20%;
+        min-width: 150px;
     }
 }
 
