@@ -5,7 +5,7 @@ import { createRoot } from 'react-dom/client';
 // --- TYPE DEFINITIONS ---
 type GameMode = 'single' | 'league' | 'team';
 type PokemonCategory = 'normal' | 'rare' | 'legendary' | 'mythical';
-type GamePage = 'start' | 'pokemon-selection' | 'battle' | 'game-over';
+type GamePage = 'start' | 'pokemon-selection' | 'battle' | 'game-over' | 'how-to-play';
 
 interface Pokemon {
     id: number;
@@ -206,6 +206,7 @@ const App = () => {
         <>
             <div id="main-content">
                 {state.page === 'start' && <StartScreen />}
+                {state.page === 'how-to-play' && <HowToPlayScreen />}
                 {state.page === 'pokemon-selection' && <PokemonSelectionScreen />}
                 {state.page === 'battle' && <BattleScreen />}
                 {state.page === 'game-over' && <GameOverScreen />}
@@ -228,9 +229,12 @@ const StartScreen = () => {
             {!state.mode ? (
                 <div className="mode-selection">
                     <h2>Choose a Mode</h2>
-                    <button className="btn" onClick={() => handleModeSelect('single')}>Single Battle</button>
-                    <button className="btn" onClick={() => handleModeSelect('team')}>Team Battle</button>
-                    <button className="btn" onClick={() => handleModeSelect('league')}>League Challenge</button>
+                    <div className="start-buttons-grid">
+                        <button className="btn" onClick={() => handleModeSelect('single')}>Single Battle</button>
+                        <button className="btn" onClick={() => handleModeSelect('team')}>Team Battle</button>
+                        <button className="btn" onClick={() => handleModeSelect('league')}>League Challenge</button>
+                        <button className="btn btn-secondary" onClick={() => setState({ page: 'how-to-play' })}>How to Play</button>
+                    </div>
                 </div>
             ) : (
                 <div className="category-selection">
@@ -247,6 +251,44 @@ const StartScreen = () => {
         </div>
     );
 };
+
+const HowToPlayScreen = () => (
+    <div id="how-to-play-screen" className="glass-container">
+        <div className="how-to-play-header">
+            <h1>How to Play</h1>
+            <button className="btn" onClick={() => setState({ page: 'start', mode: null })}>Back</button>
+        </div>
+        <div className="how-to-play-content">
+            <div className="rules-section">
+                <h2>Single Battle</h2>
+                <p>The classic one-on-one Pokémon duel.</p>
+                <ul>
+                    <li><strong>Goal:</strong> Defeat your opponent's single Pokémon.</li>
+                    <li><strong>Setup:</strong> Choose one Pokémon from the selected category. The AI opponent will also choose one.</li>
+                    <li><strong>Gameplay:</strong> You and the opponent take turns attacking. The first trainer to make the other's Pokémon faint is the winner!</li>
+                </ul>
+            </div>
+            <div className="rules-section">
+                <h2>Team Battle</h2>
+                <p>A strategic battle between two full teams.</p>
+                <ul>
+                    <li><strong>Goal:</strong> Defeat the opponent's entire team of 5 Pokémon.</li>
+                    <li><strong>Setup:</strong> Select a team of 5 Pokémon. The AI will do the same.</li>
+                    <li><strong>Gameplay:</strong> Fight one-on-one with your active Pokémon. You can either attack or switch your active Pokémon with a benched one. When a Pokémon faints, you must send out another. The battle is won when all 5 of the opponent's Pokémon have fainted.</li>
+                </ul>
+            </div>
+            <div className="rules-section">
+                <h2>League Challenge</h2>
+                <p>The ultimate test of endurance and skill. Can you conquer the league?</p>
+                <ul>
+                    <li><strong>Goal:</strong> Win a series of 5 consecutive battles against different trainers.</li>
+                    <li><strong>Setup:</strong> Choose one Pokémon. This will be your partner for the entire league.</li>
+                    <li><strong>Gameplay:</strong> You face 5 opponents in a row. Your Pokémon is fully healed between rounds. After each victory, you can choose to update your Pokémon's moves. Losing any battle ends the challenge. Win all 5 to become the League Champion!</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+);
 
 const PokemonSelectionScreen = () => {
     const { mode, displayedPokemon, selectedTeam, filter, isLoadingMore } = state;
