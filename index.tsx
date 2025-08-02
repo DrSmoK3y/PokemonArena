@@ -537,7 +537,7 @@ const GameOverScreen = () => (
                         </>
                     ) : (
                         <>
-                            <p>Congratulations! You have conquered the League Challenge!</p>
+                            <p>Congratulations! You have conquered the League of <span style={{textTransform: 'capitalize'}}>{state.category}</span>!</p>
                              <div className="d-flex justify-center gap-1 mt-2">
                                 <button className="btn" onClick={goBackToStart}>Play Again</button>
                                 <button className="btn btn-secondary" onClick={() => openModal(<BattleLogModal />)}>Battle Log</button>
