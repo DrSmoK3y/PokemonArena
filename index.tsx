@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 
@@ -47,7 +46,7 @@ interface BattlePokemon {
 interface FloatingText {
     target: 'player' | 'opponent';
     message: string;
-    type: 'super-effective' | 'not-very-effective';
+    type: 'super-effective' | 'not-very-effective' | 'no-effect';
 }
 
 // --- CONSTANTS AND CONFIGURATION ---
@@ -59,7 +58,7 @@ const LEAGUE_ROUNDS = 5;
 const CATEGORY_POKEMON_IDS: Record<PokemonCategory, number[]> = {
     normal: [1,4,7,10,13,16,19,21,23,25,27,29,32,35,37,39,41,43,46,48,50,52,54,56,58,60,63,66,69,72,74,77,79,81,83,86,88,90,92,95,98,100,102,104,106,108,109,111,113,114,115,116,118,120,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143],
     rare: [2,3,5,6,8,9,11,12,14,15,17,18,26,28,31,34,36,38,40,42,45,47,49,51,53,55,57,59,62,65,68,71,73,76,78,80,82,85,87,89,91,94,97,99,101,105,110,112,117,119,121],
-    legendary: [144,145,146,150,243,244,250,377,378,379,380,381,382,383,384,483,484,487,638,639,640,641,642,643,644,646],
+    legendary: [144,145,146,150,243,244,250,377,378,379,380,381,382,383,384,483,484,487,638,639,640,641,642,643,644,646,718],
     mythical: [151,251,385,386,490,491,492,493,494,647,648,649,720,721,800,801,802,807,808,809,891,892,893]
 };
 
@@ -780,7 +779,7 @@ function processTurn(attacker: BattlePokemon, defender: BattlePokemon, move: Mov
 
         const defenderIsPlayer = defender === state.playerTeam[state.playerActivePokemonIndex];
         let effectivenessMessageForFloat = '';
-        let effectivenessTypeForFloat: 'super-effective' | 'not-very-effective' | null = null;
+        let effectivenessTypeForFloat: 'super-effective' | 'not-very-effective' | 'no-effect' | null = null;
 
         if (effectiveness.includes("super effective")) {
             effectivenessMessageForFloat = 'Super effective!';
@@ -788,6 +787,9 @@ function processTurn(attacker: BattlePokemon, defender: BattlePokemon, move: Mov
         } else if (effectiveness.includes("not very effective")) {
             effectivenessMessageForFloat = 'Not very effective!';
             effectivenessTypeForFloat = 'not-very-effective';
+        } else if (effectiveness.includes("doesn't affect")) {
+            effectivenessMessageForFloat = "It doesn't affect...";
+            effectivenessTypeForFloat = 'no-effect';
         }
 
         if (effectivenessTypeForFloat) {
