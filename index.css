@@ -352,6 +352,7 @@ div#start-screen {
     align-items: center;
     justify-content: center;
     min-height: 200px;
+    position: relative;
 }
 
 .pokemon-img-container img {
@@ -498,6 +499,20 @@ div#start-screen {
 }
 #battle-log p:last-child { border-bottom: none; margin-bottom: 0; }
 
+.log-super-effective {
+    color: var(--color-green);
+    font-weight: bold;
+}
+.log-not-effective {
+    color: var(--color-yellow);
+    font-weight: bold;
+}
+.log-no-effect {
+    color: #aaa;
+    font-style: italic;
+}
+
+
 /* HOW TO PLAY SCREEN */
 #how-to-play-screen {
     display: flex;
@@ -591,6 +606,39 @@ div#start-screen {
 
 .modal-content h2 { font-size: 3rem; text-align: center; margin-bottom: 2rem; }
 .modal-content .btn { margin-top: 2rem; }
+
+
+/* BATTLE LOG MODAL */
+.battle-log-modal .modal-content {
+    width: 800px;
+    max-width: 95%;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+.battle-log-modal h2 {
+    flex-shrink: 0;
+}
+.battle-log-content {
+    overflow-y: auto;
+    padding: 1rem;
+    flex-grow: 1;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+.battle-log-content p {
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+.battle-log-content p:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
 
 /* LEAGUE TRANSITION OVERLAY */
 .league-transition-overlay .modal-content {
@@ -727,6 +775,39 @@ div#start-screen {
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
+
+/* FLOATING TEXT */
+.floating-text {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    pointer-events: none;
+    animation: float-up-and-fade 1.5s ease-out forwards;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+    transform: translateX(-50%) rotate(-15deg);
+}
+
+.floating-text.super-effective {
+    color: var(--color-green);
+}
+
+.floating-text.not-very-effective {
+    color: var(--color-yellow);
+}
+
+@keyframes float-up-and-fade {
+    0% {
+        opacity: 1;
+        transform: translateY(0) translateX(-50%) rotate(-15deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-80px) translateX(-50%) rotate(-15deg);
+    }
+}
+
 
 /* RESPONSIVENESS */
 @media (max-width: 900px) {
