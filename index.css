@@ -62,7 +62,7 @@ body {
 }
 
 h1, h2, h3, h4 {
-    font-family: var(--font-heading);
+    font-family: var(--font-heading);background-image: url('path/to/your/image.jpg');
     letter-spacing: 2px;
     color: var(--color-primary);
     text-shadow: 2px 2px 4px var(--color-accent);
@@ -137,6 +137,7 @@ h1, h2, h3, h4 {
 
 div#start-screen {
     height: 95vh;
+    background-image: url('/bg.jpg');
 }
 
 #start-screen h1 { font-size: 6rem; margin-bottom: 2rem; }
