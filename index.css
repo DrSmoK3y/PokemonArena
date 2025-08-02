@@ -1,4 +1,3 @@
-
 :root {
     --font-heading: 'Bangers', cursive;
     --font-body: 'Inter', sans-serif;
@@ -795,6 +794,10 @@ div#start-screen {
 
 .floating-text.not-very-effective {
     color: var(--color-yellow);
+}
+
+.floating-text.no-effect {
+    color: white;
 }
 
 @keyframes float-up-and-fade {
