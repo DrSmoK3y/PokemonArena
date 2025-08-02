@@ -138,6 +138,9 @@ h1, h2, h3, h4 {
 div#start-screen {
     height: 95vh;
     background-image: url('/bg.jpg');
+    background-size: cover; /* Resizes the image to cover the entire container */
+  background-repeat: no-repeat; /* Prevents the image from repeating */
+  background-position: center center; 
 }
 
 #start-screen h1 { font-size: 6rem; margin-bottom: 2rem; }
