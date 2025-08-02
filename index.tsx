@@ -44,6 +44,12 @@ interface BattlePokemon {
     isFainted: boolean;
 }
 
+interface FloatingText {
+    target: 'player' | 'opponent';
+    message: string;
+    type: 'super-effective' | 'not-very-effective';
+}
+
 // --- CONSTANTS AND CONFIGURATION ---
 const POKEAPI_BASE_URL = 'https://pokeapi.co/api/v2';
 const POKEMON_PER_PAGE = 30;
@@ -124,6 +130,7 @@ let state = {
     battleResult: '' as 'win' | 'lose' | '',
     lastPlayerMove: null as string | null,
     lastOpponentMove: null as string | null,
+    floatingText: null as FloatingText | null,
 
     // League
     leagueRound: 0,
@@ -425,6 +432,8 @@ const PokemonFighter = ({ pokemon, isOpponent }: { pokemon: BattlePokemon, isOpp
     let hpColor = 'var(--color-green)';
     if (hpPercentage < 50) hpColor = 'var(--color-yellow)';
     if (hpPercentage < 20) hpColor = 'var(--color-red)';
+    const fighterKey = isOpponent ? 'opponent' : 'player';
+    const showFloatingText = state.floatingText && state.floatingText.target === fighterKey;
     
     return (
         <div className={`pokemon-fighter-container ${isOpponent ? 'opponent' : 'player'}`}>
@@ -441,6 +450,11 @@ const PokemonFighter = ({ pokemon, isOpponent }: { pokemon: BattlePokemon, isOpp
                 <span className="hp-text">{pokemon.currentHp} / {pokemon.maxHp}</span>
             </div>
             <div className="pokemon-img-container">
+                 {showFloatingText && (
+                    <div className={`floating-text ${state.floatingText.type}`}>
+                        {state.floatingText.message}
+                    </div>
+                )}
                 <img id={isOpponent ? 'opponent-sprite' : 'player-sprite'} src={pokemon.sprite} alt={pokemon.name} className={pokemon.isFainted ? 'fainted' : ''}/>
             </div>
              <div className="moves-display">
@@ -525,13 +539,33 @@ const GameOverScreen = () => (
                     ) : (
                         <>
                             <p>Congratulations! You have conquered the League Challenge!</p>
-                            <button className="btn mt-2" onClick={goBackToStart}>Play Again</button>
+                             <div className="d-flex justify-center gap-1 mt-2">
+                                <button className="btn" onClick={goBackToStart}>Play Again</button>
+                                <button className="btn btn-secondary" onClick={() => openModal(<BattleLogModal />)}>Battle Log</button>
+                            </div>
                         </>
                     )}
                 </>
             ) : (
-                <button className="btn mt-2" onClick={goBackToStart}>Play Again</button>
+                 <div className="d-flex justify-center gap-1 mt-2">
+                    <button className="btn" onClick={goBackToStart}>Play Again</button>
+                    <button className="btn btn-secondary" onClick={() => openModal(<BattleLogModal />)}>Battle Log</button>
+                </div>
             )}
+        </div>
+    </div>
+);
+
+const BattleLogModal = () => (
+    <div className="modal-overlay battle-log-modal">
+        <div className="modal-content glass-container">
+            <h2 className="text-center">Battle Log</h2>
+            <div className="battle-log-content">
+                {state.battleLog.map((msg, i) => <p key={i} dangerouslySetInnerHTML={{ __html: msg }}></p>)}
+            </div>
+            <div className="text-center">
+                <button className="btn btn-secondary" onClick={closeModal}>Close</button>
+            </div>
         </div>
     </div>
 );
@@ -631,6 +665,25 @@ const TypeChartPanel = () => {
     );
 };
 
+// --- LOG HELPERS ---
+function getTypeBadgeHTML(type: string): string {
+    const style = `background-color: var(--type-${type}); display: inline-block; padding: 0.2em 0.5em; border-radius: 5px; color: white; font-size: 0.8rem; text-shadow: 1px 1px 2px black; text-transform: uppercase; font-weight: bold; margin-left: 8px; vertical-align: middle;`;
+    return `<span style="${style}">${type}</span>`;
+}
+
+function formatEffectivenessMessage(message: string): string {
+    if (message.includes("super effective")) {
+        return `<span class="log-super-effective">${message}</span>`;
+    }
+    if (message.includes("not very effective")) {
+        return `<span class="log-not-effective">${message}</span>`;
+    }
+    if (message.includes("doesn't affect")) {
+        return `<span class="log-no-effect">${message}</span>`;
+    }
+    return message;
+}
+
 // --- GAME FLOW & ACTIONS ---
 function goBackToStart() {
     Object.assign(state, {
@@ -638,7 +691,7 @@ function goBackToStart() {
         selectionOffset: 0, selectedTeam: [], filter: '', playerTeam: [], opponentTeam: [],
         playerActivePokemonIndex: 0, opponentActivePokemonIndex: 0, battleLog: [], isPlayerTurn: true,
         isBattleOver: false, battleResult: '', leagueRound: 0, leagueOpponents: [], isStartingBattle: false,
-        lastPlayerMove: null, lastOpponentMove: null,
+        lastPlayerMove: null, lastOpponentMove: null, floatingText: null,
     });
     render();
 }
@@ -719,12 +772,38 @@ function handlePlayerAction(action: { type: 'attack', move: Move } | { type: 'sw
 function processTurn(attacker: BattlePokemon, defender: BattlePokemon, move: Move) {
     const isPlayerAttacker = attacker === state.playerTeam[state.playerActivePokemonIndex];
     
-    addLog(`<strong>${attacker.name}</strong> used <strong>${move.name}</strong>!`);
+    addLog(`<strong>${attacker.name}</strong> used <strong>${move.name}</strong>${getTypeBadgeHTML(move.type.name)}!`);
     document.getElementById(isPlayerAttacker ? 'player-sprite' : 'opponent-sprite')?.classList.add('attack-animation');
 
     setTimeout(() => {
         const { damage, effectiveness } = calculateDamage(attacker, defender, move);
-        if (effectiveness) addLog(effectiveness);
+
+        const defenderIsPlayer = defender === state.playerTeam[state.playerActivePokemonIndex];
+        let effectivenessMessageForFloat = '';
+        let effectivenessTypeForFloat: 'super-effective' | 'not-very-effective' | null = null;
+
+        if (effectiveness.includes("super effective")) {
+            effectivenessMessageForFloat = 'Super effective!';
+            effectivenessTypeForFloat = 'super-effective';
+        } else if (effectiveness.includes("not very effective")) {
+            effectivenessMessageForFloat = 'Not very effective!';
+            effectivenessTypeForFloat = 'not-very-effective';
+        }
+
+        if (effectivenessTypeForFloat) {
+            setState({
+                floatingText: {
+                    target: defenderIsPlayer ? 'player' : 'opponent',
+                    message: effectivenessMessageForFloat,
+                    type: effectivenessTypeForFloat,
+                }
+            });
+            setTimeout(() => {
+                setState({ floatingText: null });
+            }, 1500); 
+        }
+
+        if (effectiveness) addLog(formatEffectivenessMessage(effectiveness));
         
         defender.currentHp = Math.max(0, defender.currentHp - damage);
         addLog(`It dealt <strong>${damage}</strong> damage!`);
@@ -892,7 +971,7 @@ async function startNextLeagueBattle() {
 
 function addLog(message: string) {
     state.battleLog.push(message);
-    if (state.battleLog.length > 20) state.battleLog.shift();
+    if (state.battleLog.length > 100) state.battleLog.shift(); // Increase log limit
     const logEl = document.getElementById('battle-log');
     if (logEl) setTimeout(() => logEl.scrollTop = logEl.scrollHeight, 0);
     render();
