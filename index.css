@@ -149,7 +149,17 @@ div#start-screen {
     gap: 1rem;
     align-items: center;
     width: 100%;
-    max-width: 600px;
+    max-width: 700px;
+}
+
+.start-buttons-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    width: 100%;
+}
+.start-buttons-grid .btn {
+    width: 100%;
 }
 
 .category-grid {
@@ -488,6 +498,64 @@ div#start-screen {
 }
 #battle-log p:last-child { border-bottom: none; margin-bottom: 0; }
 
+/* HOW TO PLAY SCREEN */
+#how-to-play-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    height: 100%;
+    padding: 2rem;
+}
+
+.how-to-play-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+.how-to-play-header h1 {
+    margin-bottom: 0;
+}
+
+.how-to-play-content {
+    overflow-y: auto;
+    flex-grow: 1;
+    padding-right: 1rem;
+}
+
+.rules-section {
+    background: rgba(0,0,0,0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.rules-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-primary);
+    padding-bottom: 0.5rem;
+}
+
+.rules-section p {
+    font-size: 1.1rem;
+    color: #ddd;
+    margin-bottom: 1rem;
+}
+
+.rules-section ul {
+    list-style-position: inside;
+    padding-left: 0.5rem;
+}
+
+.rules-section li {
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+}
+
 /* MODAL */
 .modal-overlay {
     position: fixed;
@@ -684,7 +752,7 @@ div#start-screen {
     .btn { font-size: 1.2rem; }
     #pokemon-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
     .pokemon-card img { width: 96px; height: 96px; }
-    .category-grid { grid-template-columns: 1fr; }
+    .start-buttons-grid, .category-grid { grid-template-columns: 1fr; }
     #battle-log-container { height: 200px; }
     .moves-grid { grid-template-columns: 1fr; }
     .pokemon-grid-container {
