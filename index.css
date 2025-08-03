@@ -518,7 +518,7 @@ div#start-screen {
     flex-direction: column;
     gap: 1.5rem;
     height: 100%;
-    padding: 2rem;
+    padding: 1rem;
 }
 
 .how-to-play-header {
