@@ -426,6 +426,20 @@ const BattleScreen = () => {
     );
 };
 
+const TeamRoster = ({ team, activeIndex }: { team: BattlePokemon[], activeIndex: number }) => (
+    <div className="team-roster">
+        {team.map((p, index) => (
+            <div
+                key={p.id}
+                className={`roster-pokemon ${p.isFainted ? 'fainted' : ''} ${index === activeIndex ? 'active' : ''}`}
+                title={`${p.name} - ${p.currentHp}/${p.maxHp} HP`}
+            >
+                <img src={p.sprite} alt={p.name} />
+            </div>
+        ))}
+    </div>
+);
+
 const PokemonFighter = ({ pokemon, isOpponent }: { pokemon: BattlePokemon, isOpponent: boolean }) => {
     const hpPercentage = (pokemon.currentHp / pokemon.maxHp) * 100;
     let hpColor = 'var(--color-green)';
@@ -433,6 +447,8 @@ const PokemonFighter = ({ pokemon, isOpponent }: { pokemon: BattlePokemon, isOpp
     if (hpPercentage < 20) hpColor = 'var(--color-red)';
     const fighterKey = isOpponent ? 'opponent' : 'player';
     const showFloatingText = state.floatingText && state.floatingText.target === fighterKey;
+    const team = isOpponent ? state.opponentTeam : state.playerTeam;
+    const activeIndex = isOpponent ? state.opponentActivePokemonIndex : state.playerActivePokemonIndex;
     
     return (
         <div className={`pokemon-fighter-container ${isOpponent ? 'opponent' : 'player'}`}>
@@ -456,6 +472,7 @@ const PokemonFighter = ({ pokemon, isOpponent }: { pokemon: BattlePokemon, isOpp
                 )}
                 <img id={isOpponent ? 'opponent-sprite' : 'player-sprite'} src={pokemon.sprite} alt={pokemon.name} className={pokemon.isFainted ? 'fainted' : ''}/>
             </div>
+             {state.mode === 'team' && <TeamRoster team={team} activeIndex={activeIndex} />}
              <div className="moves-display">
                 {isOpponent ? (
                     <OpponentMoves moves={pokemon.moves} lastMove={state.lastOpponentMove} />
@@ -918,13 +935,31 @@ function handleSwitch(newIndex: number) {
     // The player can now choose an action.
 }
 
-function nextLeagueRound() {
-    closeModal();
+async function nextLeagueRound() {
+    // Hide the game over screen immediately to prevent it from re-appearing with new data
+    setState({ isBattleOver: false, battleResult: '' });
+
+    openModal(
+        <div className="modal-overlay">
+            <div className="modal-content glass-container text-center">
+                <h2>Preparing Next Battle...</h2>
+                <div className="loading-spinner"></div>
+            </div>
+        </div>
+    );
+
+    // Simulate load time
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    // Increment round and show the transition overlay
     setState({ leagueRound: state.leagueRound + 1 });
     openModal(<LeagueTransitionOverlay />);
 }
 
 async function updateMovesAndContinue() {
+    // Hide the game over screen immediately to prevent it from re-appearing
+    setState({ isBattleOver: false, battleResult: '' });
+
     openModal(
         <div className="modal-overlay">
             <div className="modal-content glass-container text-center">
@@ -945,9 +980,11 @@ async function updateMovesAndContinue() {
     
     state.playerTeam[0].moves = newMoves;
     
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 1500));
     
-    nextLeagueRound();
+    // Now progress the league
+    setState({ leagueRound: state.leagueRound + 1 });
+    openModal(<LeagueTransitionOverlay />);
 }
 
 async function startNextLeagueBattle() {
