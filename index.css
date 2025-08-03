@@ -62,7 +62,7 @@ body {
 }
 
 h1, h2, h3, h4 {
-    font-family: var(--font-heading);background-image: url('path/to/your/image.jpg');
+    font-family: var(--font-heading);
     letter-spacing: 2px;
     color: var(--color-primary);
     text-shadow: 2px 2px 4px var(--color-accent);
@@ -137,10 +137,6 @@ h1, h2, h3, h4 {
 
 div#start-screen {
     height: 95vh;
-    background-image: url('/bg.jpg');
-    background-size: cover; /* Resizes the image to cover the entire container */
-  background-repeat: no-repeat; /* Prevents the image from repeating */
-  background-position: center center; 
 }
 
 #start-screen h1 { font-size: 6rem; margin-bottom: 2rem; }
@@ -653,7 +649,7 @@ div#start-screen {
 .league-transition-overlay h2 { font-size: 4rem; }
 .vs-pokeball {
     width: 80px; height: 80px;
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgZmlsbD0iI2ZmZiI+PHBhdGggZD0iTTEyIDJBMTAgMTAgMCAwIDAgMiAxMmExMCAxMCAwIDAgMCAxMCAxMCAxMCAxMCAwIDAgMCAxMC0xMEExMCAxMCAwIDAgMCAxMiAyem0wIDJhOCA4IDAgMCAxIDggOCA4IDggMCAwIDEgLTggOCA4IDggMCAwIDEgLTgtOCA4IDggMCAwIDEgOC04em0wIDZoMnYySDJ2LTJIMTB6bS00IDJoOHYtMkg4djJ6bTQgMmE0IDQgMCAwIDEgNCA0IDQgNCAwIDAgMS00IDQgNCA0IDAgMCAxLTQtNCA0IDQgMCAwIDEgNC00em0wIDJhMiAyIDAgMCAwLTIgMiAyIDIgMCAwIDAgMiAyIDIgMiAwIDAgMCAyLTIgMiAyIDAgMCAwLTItMnoiLz48L3N2Zz4=');
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0OCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjQiLz48cGF0aCBmaWxsPSIjZjAwIiBkPSJNMiw1MCBhNDgsNDggMCAwLDEgOTYsMCBIMnpIi8+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iMTYiIGZpbGw9IiMwMDAiLz48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSIxMCIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==');
     background-size: contain; background-repeat: no-repeat; background-position: center;
 }
 
@@ -871,4 +867,46 @@ div#start-screen {
         width: 100%;
         max-height: 250px;
     }
+}
+
+/* TEAM ROSTER STYLES */
+.team-roster {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    min-height: 60px;
+    align-items: center;
+}
+
+.roster-pokemon {
+    width: 50px;
+    height: 50px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 50%;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px;
+    cursor: help;
+}
+
+.roster-pokemon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: filter 0.3s;
+}
+
+.roster-pokemon.fainted img {
+    filter: grayscale(1) brightness(0.5);
+    opacity: 0.6;
+}
+
+.roster-pokemon.active {
+    border-color: var(--color-primary);
+    transform: scale(1.15);
+    background: rgba(255, 203, 5, 0.2);
 }
